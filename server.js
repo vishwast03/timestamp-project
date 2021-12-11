@@ -46,38 +46,67 @@ const months = [
 ]
 
 app.get("/api/:date?", function (req, res) {
+  let dateString = req.params.date;
 
-  let date;
-  let regexp = /^[0-9]+$/;
-  if (req.params.date) {
-    if (req.params.date.match(regexp))
-      date = new Date(parseInt(req.params.date));
-    else
-      date = new Date(req.params.date);
+  if(/\d{5,}/.test(dateString)) {
+
+    const date = new Date(parseInt(dateString));
+
+    res.json({unix: date.getTime(), utc: date.toUTCString()});
+
   }
   else {
-    date = new Date();
+    
+    const date = new Date(dateString);
+
+    if(date.toString() === "Invalid Date") {
+
+      res.json({error: "Invalid Date"});
+
+    }
+    else {
+
+      res.json({unix: date.getTime(), utc: date.toUTCString()});
+
+    }
+
   }
 
-  if (isNaN(date.getTime())) {
-    res.json({ error: "Invalid Date" });
-  }
-  else {
-    const unixDate = date.getTime();
-
-    const utcDay = `${weekDays[date.getUTCDay()]}`;
-    const utcDate = `${date.getUTCDate()}`;
-    const utcMonth = `${months[date.getUTCMonth()]}`;
-    const utcYear = `${date.getUTCFullYear()}`;
-    const utcHour = `${date.getUTCHours() === 0 ? "00" : date.getUTCHours()}`;
-    const utcMinute = `${date.getUTCMinutes() === 0 ? "00" : date.getUTCMinutes()}`;
-    const utcSecond = `${date.getUTCSeconds() === 0 ? "00" : date.getUTCSeconds()}`;
-
-    const utcDateString = `${utcDay}, ${utcDate} ${utcMonth} ${utcYear} ${utcHour}:${utcMinute}:${utcSecond} GMT`;
-
-    res.json({ unix: unixDate, utc: utcDateString });
-  }
 });
+
+// app.get("/api/:date?", function (req, res) {
+
+//   let date;
+//   let regexp = /^[0-9]+$/;
+//   if (req.params.date) {
+//     if (req.params.date.match(regexp))
+//       date = new Date(parseInt(req.params.date));
+//     else
+//       date = new Date(req.params.date);
+//   }
+//   else {
+//     date = new Date();
+//   }
+
+//   if (isNaN(date.getTime())) {
+//     res.json({ error: "Invalid Date" });
+//   }
+//   else {
+//     const unixDate = date.getTime();
+
+//     const utcDay = `${weekDays[date.getUTCDay()]}`;
+//     const utcDate = `${date.getUTCDate()}`;
+//     const utcMonth = `${months[date.getUTCMonth()]}`;
+//     const utcYear = `${date.getUTCFullYear()}`;
+//     const utcHour = `${date.getUTCHours() === 0 ? "00" : date.getUTCHours()}`;
+//     const utcMinute = `${date.getUTCMinutes() === 0 ? "00" : date.getUTCMinutes()}`;
+//     const utcSecond = `${date.getUTCSeconds() === 0 ? "00" : date.getUTCSeconds()}`;
+
+//     const utcDateString = `${utcDay}, ${utcDate} ${utcMonth} ${utcYear} ${utcHour}:${utcMinute}:${utcSecond} GMT`;
+
+//     res.json({ unix: unixDate, utc: utcDateString });
+//   }
+// });
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
