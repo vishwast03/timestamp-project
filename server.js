@@ -11,13 +11,13 @@ app.use(cors({ optionsSuccessStatus: 200 }));  // some legacy browsers choke on 
 app.use(express.static('public'));
 
 // http://expressjs.com/en/starter/basic-routing.html
-app.get("/", function (req, res) {
+app.get("/", function(req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
 
 // your first API endpoint... 
-app.get("/api/hello", function (req, res) {
+app.get("/api/hello", function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
@@ -45,28 +45,39 @@ const months = [
   "Dec",
 ]
 
-app.get("/api/:date?", function (req, res) {
+app.get("/api/:date?", function(req, res) {
   let dateString = req.params.date;
 
-  if(/\d{5,}/.test(dateString)) {
+  if (dateString === undefined) {
 
-    const date = new Date(parseInt(dateString));
+    const date = new Date();
 
-    res.json({unix: date.getTime(), utc: date.toUTCString()});
+    res.json({ unix: date.getTime(), utc: date.toUTCString() });
 
   }
   else {
-    
-    const date = new Date(dateString);
 
-    if(date.toString() === "Invalid Date") {
+    if (/\d{5,}/.test(dateString)) {
 
-      res.json({error: "Invalid Date"});
+      const date = new Date(parseInt(dateString));
+
+      res.json({ unix: date.getTime(), utc: date.toUTCString() });
 
     }
     else {
 
-      res.json({unix: date.getTime(), utc: date.toUTCString()});
+      const date = new Date(dateString);
+
+      if (date.toString() === "Invalid Date") {
+
+        res.json({ error: "Invalid Date" });
+
+      }
+      else {
+
+        res.json({ unix: date.getTime(), utc: date.toUTCString() });
+
+      }
 
     }
 
@@ -75,6 +86,6 @@ app.get("/api/:date?", function (req, res) {
 });
 
 // listen for requests :)
-var listener = app.listen(process.env.PORT, function () {
+var listener = app.listen(process.env.PORT, function() {
   console.log('Your app is listening on port ' + listener.address().port);
 });
